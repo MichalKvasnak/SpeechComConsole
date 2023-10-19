@@ -1,13 +1,14 @@
 #include "SpeechConsole.h"
 
 int ErrorHandle(int errorValue, char* errorMessage)
-{
+	{
 	fprintf(stderr, "\n\n### ERROR: %s ###\n\n", errorMessage);
-
+	
 	return errorValue;
-}
+	}
+
 HANDLE SerialCommSetup(TCHAR* comName, DWORD baudRate, BYTE byteSize, BYTE parity, BYTE stopBits)
-{
+	{
 	/* Struktura pro seriovou komunikaci */
 	DCB dcb;
 
@@ -34,10 +35,10 @@ HANDLE SerialCommSetup(TCHAR* comName, DWORD baudRate, BYTE byteSize, BYTE parit
 
 	/* Testovani platneho vytvoreni nastaveni seriove komunikace*/
 	if (hCom == INVALID_HANDLE_VALUE)
-	{
+		{
 		printf("Vytvoreni nastaveni seriove komunikace selhalo! Error: %d.\n", GetLastError());
 		return hCom;
-	}
+		}
 
 	/* Inicializace DCB struktury */
 	SecureZeroMemory(&dcb, sizeof(DCB));
@@ -47,10 +48,10 @@ HANDLE SerialCommSetup(TCHAR* comName, DWORD baudRate, BYTE byteSize, BYTE parit
 	fSuccess = GetCommState(hCom, &dcb);
 
 	if (!fSuccess)
-	{
+		{
 		printf("Ziskani existujicich parametru selhalo! Error: %d.\n", GetLastError());
 		return hCom;
-	}
+		}
 
 	/* Nastaveni rychlosti prenosu*/
 	dcb.BaudRate = baudRate;
@@ -65,10 +66,10 @@ HANDLE SerialCommSetup(TCHAR* comName, DWORD baudRate, BYTE byteSize, BYTE parit
 	fSuccess = SetCommState(hCom, &dcb);
 
 	if (!fSuccess)
-	{
+		{
 		printf("Nastaveni novych parametru selhalo! Error: %d.\n", GetLastError());
 		return hCom;
-	}
+		}
 
 	/* Casovy limit mezi prijimanymi Byty */
 	timeouts.ReadIntervalTimeout = 100;
@@ -83,35 +84,35 @@ HANDLE SerialCommSetup(TCHAR* comName, DWORD baudRate, BYTE byteSize, BYTE parit
 
 	/* Overeni nastaveni casovych limitu */
 	if (SetCommTimeouts(hCom, &timeouts) == 0)
-	{
+		{
 		fprintf(stderr, "Nastaveni casovych limitu selhalo!\n");
 		CloseHandle(hCom);
 		return hCom;
-	}
+		}
 
 	/* Overeni spravnosti nastaveni seriove komunikace */
 	fSuccess = GetCommState(hCom, &dcb);
 
 	if (!fSuccess)
-	{
+		{
 		printf("Nastaveni seriove komunikace selhalo! Error: %d.\n", GetLastError());
 		return hCom;
-	}
+		}
 
 	_tprintf(TEXT("\n### Seriovy port %s byl uspesne prenastaven! ###\n\n"), pcCommPort);
 	return hCom;
-}
+	}
 
 bool EndsWith(const char* fString, const char* fEnding)
-{
+	{
 	size_t fStringLen = strlen(fString);
 	size_t fEndingLen = strlen(fEnding);
 
 	return (fStringLen >= fEndingLen) && (0 == strcmp(fString + (fStringLen - fEndingLen), fEnding));
-}
+	}
 
 bool MakeWav(char* generatedSpeech, size_t speechSize, char* fileName)
-{
+	{
 	FILE* waveFile;
 	size_t waveSize;
 
@@ -173,4 +174,4 @@ bool MakeWav(char* generatedSpeech, size_t speechSize, char* fileName)
 	waveSize = fwrite(generatedSpeech, sizeof(char), speechSize * numChannels, waveFile);
 	fclose(waveFile);
 	return true;
-}
+	}
